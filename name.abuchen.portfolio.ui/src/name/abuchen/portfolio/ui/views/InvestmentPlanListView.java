@@ -7,8 +7,33 @@ import java.util.List;
 
 import javax.inject.Inject;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.PortfolioTransaction;
+import name.abuchen.portfolio.model.Security;
+import name.abuchen.portfolio.money.CurrencyConverterImpl;
+import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
+import name.abuchen.portfolio.money.Money;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Images;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountPlanDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityPlanDialog;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityPlanModel;
+import name.abuchen.portfolio.ui.util.AbstractDropDown;
+import name.abuchen.portfolio.ui.util.viewers.Column;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
+import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
+import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
+import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
+import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
+import name.abuchen.portfolio.ui.views.columns.NameColumn;
+import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+
 import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
 import org.eclipse.jface.action.IMenuListener;
 import org.eclipse.jface.action.IMenuManager;
 import org.eclipse.jface.action.MenuManager;
@@ -25,31 +50,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.ToolBar;
-
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.model.PortfolioTransaction;
-import name.abuchen.portfolio.model.Security;
-import name.abuchen.portfolio.money.CurrencyConverterImpl;
-import name.abuchen.portfolio.money.ExchangeRateProviderFactory;
-import name.abuchen.portfolio.money.Money;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Images;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel;
-import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
-import name.abuchen.portfolio.ui.util.AbstractDropDown;
-import name.abuchen.portfolio.ui.util.viewers.Column;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport.ModificationListener;
-import name.abuchen.portfolio.ui.util.viewers.ColumnViewerSorter;
-import name.abuchen.portfolio.ui.util.viewers.DateEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ListEditingSupport;
-import name.abuchen.portfolio.ui.util.viewers.ShowHideColumnHelper;
-import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
-import name.abuchen.portfolio.ui.views.columns.NameColumn;
-import name.abuchen.portfolio.ui.views.columns.NoteColumn;
 
 public class InvestmentPlanListView extends AbstractListView implements ModificationListener
 {
@@ -76,7 +76,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     public void onModified(Object element, Object newValue, Object oldValue)
     {
         InvestmentPlan plan = (InvestmentPlan) element;
-        if (plan.getAccount() != null && plan.getAccount().equals(InvestmentPlanModel.DELIVERY))
+        if (plan.getAccount() != null && plan.getAccount().equals(SecurityPlanModel.DELIVERY))
             plan.setAccount(null);
 
         markDirty();
@@ -91,15 +91,28 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     private void addNewInvestmentPlanButton(ToolBar toolBar)
     {
-        Action action = new OpenDialogAction(this, Messages.InvestmentPlanMenuCreate) //
-                        .type(InvestmentPlanDialog.class).onSuccess(d -> {
+        Action securityPlanAction = new OpenDialogAction(this, "Wertpapier Plan").type(SecurityPlanDialog.class)
+                        .onSuccess(d -> {
                             markDirty();
                             plans.setInput(getClient().getPlans());
                         });
-        action.setImageDescriptor(Images.PLUS.descriptor());
-        action.setToolTipText(Messages.InvestmentPlanMenuCreate);
+        Action accountPlanAction = new OpenDialogAction(this, "Konto Plan").type(AccountPlanDialog.class).onSuccess(
+                        d -> {
+                            markDirty();
+                            plans.setInput(getClient().getPlans());
+                        });
+        new AbstractDropDown(toolBar, "InvestmentPlan", Images.INVESTMENTPLAN.image(), SWT.NONE)
+        {
 
-        new ActionContributionItem(action).fill(toolBar, -1);
+            @Override
+            public void menuAboutToShow(IMenuManager manager)
+            {
+
+                manager.add(securityPlanAction);
+                manager.add(accountPlanAction);
+            }
+
+        };
     }
 
     private void addConfigButton(final ToolBar toolBar)
@@ -232,7 +245,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         });
         ColumnViewerSorter.create(Account.class, "name").attachTo(column); //$NON-NLS-1$
         List<Account> accounts = new ArrayList<Account>();
-        accounts.add(InvestmentPlanModel.DELIVERY);
+        accounts.add(SecurityPlanModel.DELIVERY);
         accounts.addAll(getClient().getAccounts());
         new ListEditingSupport(InvestmentPlan.class, "account", accounts).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
@@ -324,7 +337,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         manager.add(new Separator());
 
         new OpenDialogAction(this, Messages.MenuEditInvestmentPlan) //
-                        .type(InvestmentPlanDialog.class, d -> d.setPlan(plan)) //
+                        .type(SecurityPlanDialog.class, d -> d.setPlan(plan)) //
                         .onSuccess(d -> {
                             markDirty();
                             plans.setInput(getClient().getPlans());

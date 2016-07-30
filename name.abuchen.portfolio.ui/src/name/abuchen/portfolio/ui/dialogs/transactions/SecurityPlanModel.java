@@ -9,7 +9,7 @@ import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.ui.Messages;
 
-public class InvestmentPlanModel extends AbstractModel
+public class SecurityPlanModel extends AbstractModel
 {
     public enum Properties
     {
@@ -33,7 +33,7 @@ public class InvestmentPlanModel extends AbstractModel
     private long amount;
     private long fees;
 
-    public InvestmentPlanModel(Client client)
+    public SecurityPlanModel(Client client)
     {
         this.client = client;
     }

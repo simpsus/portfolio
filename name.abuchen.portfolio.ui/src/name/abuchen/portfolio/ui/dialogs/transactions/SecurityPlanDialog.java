@@ -31,25 +31,25 @@ import name.abuchen.portfolio.model.Client;
 import name.abuchen.portfolio.model.InvestmentPlan;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.transactions.InvestmentPlanModel.Properties;
+import name.abuchen.portfolio.ui.dialogs.transactions.SecurityPlanModel.Properties;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
-public class InvestmentPlanDialog extends AbstractTransactionDialog
+public class SecurityPlanDialog extends AbstractTransactionDialog
 {
     private Client client;
 
     @Inject
-    public InvestmentPlanDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
+    public SecurityPlanDialog(@Named(IServiceConstants.ACTIVE_SHELL) Shell parentShell, Client client)
     {
         super(parentShell);
         this.client = client;
-        setModel(new InvestmentPlanModel(client));
+        setModel(new SecurityPlanModel(client));
     }
 
-    private InvestmentPlanModel model()
+    private SecurityPlanModel model()
     {
-        return (InvestmentPlanModel) this.model;
+        return (SecurityPlanModel) this.model;
     }
 
     @Override
@@ -91,7 +91,7 @@ public class InvestmentPlanDialog extends AbstractTransactionDialog
 
         ComboInput account = new ComboInput(editArea, Messages.ColumnAccount);
         List<Account> accounts = including(client.getActiveAccounts(), model().getAccount());
-        accounts.add(0, InvestmentPlanModel.DELIVERY);
+        accounts.add(0, SecurityPlanModel.DELIVERY);
         account.value.setInput(accounts);
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         account.bindCurrency(Properties.accountCurrencyCode.name());

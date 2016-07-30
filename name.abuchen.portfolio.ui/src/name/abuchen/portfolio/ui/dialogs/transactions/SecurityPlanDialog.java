@@ -13,6 +13,15 @@ import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 
+import name.abuchen.portfolio.model.Account;
+import name.abuchen.portfolio.model.Client;
+import name.abuchen.portfolio.model.SecurityPlan;
+import name.abuchen.portfolio.money.Values;
+import name.abuchen.portfolio.ui.Messages;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountPlanModel.Properties;
+import name.abuchen.portfolio.ui.util.DateTimePicker;
+import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
+
 import org.eclipse.core.databinding.UpdateValueStrategy;
 import org.eclipse.core.databinding.beans.BeanProperties;
 import org.eclipse.core.databinding.validation.IValidator;
@@ -25,15 +34,6 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
-
-import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.InvestmentPlan;
-import name.abuchen.portfolio.money.Values;
-import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityPlanModel.Properties;
-import name.abuchen.portfolio.ui.util.DateTimePicker;
-import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
 public class SecurityPlanDialog extends AbstractTransactionDialog
 {
@@ -66,9 +66,8 @@ public class SecurityPlanDialog extends AbstractTransactionDialog
         Text valueName = new Text(editArea, SWT.BORDER);
         IValidator validator = value -> {
             String v = (String) value;
-            return v != null && v.trim().length() > 0 ? ValidationStatus.ok()
-                            : ValidationStatus.error(
-                                            MessageFormat.format(Messages.MsgDialogInputRequired, Messages.ColumnName));
+            return v != null && v.trim().length() > 0 ? ValidationStatus.ok() : ValidationStatus.error(MessageFormat
+                            .format(Messages.MsgDialogInputRequired, Messages.ColumnName));
         };
         context.bindValue(WidgetProperties.text(SWT.Modify).observe(valueName),
                         BeanProperties.value(Properties.name.name()).observe(model),
@@ -91,7 +90,7 @@ public class SecurityPlanDialog extends AbstractTransactionDialog
 
         ComboInput account = new ComboInput(editArea, Messages.ColumnAccount);
         List<Account> accounts = including(client.getActiveAccounts(), model().getAccount());
-        accounts.add(0, SecurityPlanModel.DELIVERY);
+        accounts.add(0, AccountPlanModel.DELIVERY);
         account.value.setInput(accounts);
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         account.bindCurrency(Properties.accountCurrencyCode.name());
@@ -143,19 +142,25 @@ public class SecurityPlanDialog extends AbstractTransactionDialog
         int amountWidth = amountWidth(amount.value);
         int currencyWidth = currencyWidth(amount.currency);
 
-        startingWith(valueName, lblName).width(3 * amountWidth)
+        startingWith(valueName, lblName)
+                        .width(3 * amountWidth)
                         //
-                        .thenBelow(securities.value.getControl()).label(securities.label)
+                        .thenBelow(securities.value.getControl())
+                        .label(securities.label)
                         .suffix(securities.currency, currencyWidth)
                         //
-                        .thenBelow(portfolio.value.getControl()).label(portfolio.label)
+                        .thenBelow(portfolio.value.getControl())
+                        .label(portfolio.label)
                         //
-                        .thenBelow(account.value.getControl()).label(account.label)
+                        .thenBelow(account.value.getControl())
+                        .label(account.label)
                         .suffix(account.currency, currencyWidth)
                         //
-                        .thenBelow(valueDate.getControl()).label(lblDate)
+                        .thenBelow(valueDate.getControl())
+                        .label(lblDate)
                         //
-                        .thenBelow(interval.value.getControl()).label(interval.label)
+                        .thenBelow(interval.value.getControl())
+                        .label(interval.label)
                         //
                         .thenBelow(amount.value).width(amountWidth).label(amount.label)
                         .suffix(amount.currency, currencyWidth)
@@ -172,7 +177,7 @@ public class SecurityPlanDialog extends AbstractTransactionDialog
         model.addPropertyChangeListener(Properties.start.name(), e -> warnings.check());
     }
 
-    public void setPlan(InvestmentPlan plan)
+    public void setPlan(SecurityPlan plan)
     {
         model().setSource(plan);
     }

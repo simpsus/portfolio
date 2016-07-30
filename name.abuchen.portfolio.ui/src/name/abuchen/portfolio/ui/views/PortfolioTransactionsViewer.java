@@ -4,26 +4,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.window.ToolTip;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.KeyAdapter;
-import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Image;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Menu;
-
 import name.abuchen.portfolio.model.BuySellEntry;
 import name.abuchen.portfolio.model.CrossEntry;
 import name.abuchen.portfolio.model.Portfolio;
@@ -52,6 +32,26 @@ import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.util.viewers.StringEditingSupport;
 import name.abuchen.portfolio.ui.util.viewers.ValueEditingSupport;
 
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ColumnViewerToolTipSupport;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.jface.window.ToolTip;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.events.KeyAdapter;
+import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Image;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+
 public final class PortfolioTransactionsViewer implements ModificationListener
 {
     private class TransactionLabelProvider extends ColumnLabelProvider
@@ -65,8 +65,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
                 return Display.getDefault().getSystemColor(SWT.COLOR_BLACK);
 
             PortfolioTransaction t = (PortfolioTransaction) element;
-            return Display.getCurrent()
-                            .getSystemColor(t.getType().isLiquidation() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
+            return Display.getCurrent().getSystemColor(
+                            t.getType().isLiquidation() ? SWT.COLOR_DARK_RED : SWT.COLOR_DARK_GREEN);
         }
 
         @Override
@@ -112,8 +112,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
 
             // create new delivery
             PortfolioTransaction delivery = new PortfolioTransaction();
-            delivery.setType(transaction.getType() == PortfolioTransaction.Type.BUY
-                            ? PortfolioTransaction.Type.DELIVERY_INBOUND : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
+            delivery.setType(transaction.getType() == PortfolioTransaction.Type.BUY ? PortfolioTransaction.Type.DELIVERY_INBOUND
+                            : PortfolioTransaction.Type.DELIVERY_OUTBOUND);
             delivery.setDate(transaction.getDate());
             delivery.setMonetaryAmount(transaction.getMonetaryAmount());
             delivery.setSecurity(transaction.getSecurity());
@@ -180,10 +180,10 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         marked.addAll(transactions);
     }
 
-    public void setInput(Portfolio portfolio, List<PortfolioTransaction> transactions)
+    public void setInput(Portfolio portfolio, List<? extends Transaction> list)
     {
         this.portfolio = portfolio;
-        this.tableViewer.setInput(transactions);
+        this.tableViewer.setInput(list);
     }
 
     public void refresh()
@@ -281,9 +281,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return t.getShares() != 0
-                                ? Values.Quote.format(t.getGrossPricePerShare(), owner.getClient().getBaseCurrency())
-                                : null;
+                return t.getShares() != 0 ? Values.Quote.format(t.getGrossPricePerShare(), owner.getClient()
+                                .getBaseCurrency()) : null;
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "grossPricePerShare").attachTo(column); //$NON-NLS-1$
@@ -295,8 +294,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             @Override
             public String getText(Object element)
             {
-                return Values.Money.format(((PortfolioTransaction) element).getGrossValue(),
-                                owner.getClient().getBaseCurrency());
+                return Values.Money.format(((PortfolioTransaction) element).getGrossValue(), owner.getClient()
+                                .getBaseCurrency());
             }
         });
         ColumnViewerSorter.create(PortfolioTransaction.class, "grossValueAmount").attachTo(column); //$NON-NLS-1$
@@ -309,8 +308,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.FEE),
-                                owner.getClient().getBaseCurrency());
+                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.FEE), owner.getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -322,8 +320,7 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             public String getText(Object element)
             {
                 PortfolioTransaction t = (PortfolioTransaction) element;
-                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.TAX),
-                                owner.getClient().getBaseCurrency());
+                return Values.Money.format(t.getUnitSum(Transaction.Unit.Type.TAX), owner.getClient().getBaseCurrency());
             }
         });
         support.addColumn(column);
@@ -432,8 +429,9 @@ public final class PortfolioTransactionsViewer implements ModificationListener
             manager.add(new Separator());
         }
 
-        if (fullContextMenu && firstTransaction != null && (firstTransaction.getType() == PortfolioTransaction.Type.BUY
-                        || firstTransaction.getType() == PortfolioTransaction.Type.SELL))
+        if (fullContextMenu
+                        && firstTransaction != null
+                        && (firstTransaction.getType() == PortfolioTransaction.Type.BUY || firstTransaction.getType() == PortfolioTransaction.Type.SELL))
         {
             manager.add(new ConvertToDeliveryAction(owner, firstTransaction));
             manager.add(new Separator());
@@ -471,9 +469,8 @@ public final class PortfolioTransactionsViewer implements ModificationListener
         if (transaction.getCrossEntry() instanceof BuySellEntry)
         {
             BuySellEntry entry = (BuySellEntry) transaction.getCrossEntry();
-            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction)
-                            .type(SecurityTransactionDialog.class, d -> d.setBuySellEntry(entry))
-                            .parameters(entry.getPortfolioTransaction().getType());
+            return new OpenDialogAction(this.owner, Messages.MenuEditTransaction).type(SecurityTransactionDialog.class,
+                            d -> d.setBuySellEntry(entry)).parameters(entry.getPortfolioTransaction().getType());
         }
         else if (transaction.getCrossEntry() instanceof PortfolioTransferEntry)
         {

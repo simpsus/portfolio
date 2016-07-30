@@ -4,27 +4,6 @@ import java.time.LocalDate;
 
 import javax.inject.Inject;
 
-import org.eclipse.jface.action.Action;
-import org.eclipse.jface.action.ActionContributionItem;
-import org.eclipse.jface.action.IMenuListener;
-import org.eclipse.jface.action.IMenuManager;
-import org.eclipse.jface.action.MenuManager;
-import org.eclipse.jface.action.Separator;
-import org.eclipse.jface.layout.TableColumnLayout;
-import org.eclipse.jface.viewers.ColumnLabelProvider;
-import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
-import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.custom.CTabFolder;
-import org.eclipse.swt.custom.CTabItem;
-import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.ToolBar;
-
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.money.CurrencyConverter;
@@ -45,6 +24,27 @@ import name.abuchen.portfolio.ui.util.viewers.SimpleListContentProvider;
 import name.abuchen.portfolio.ui.views.columns.NameColumn;
 import name.abuchen.portfolio.ui.views.columns.NameColumn.NameColumnLabelProvider;
 import name.abuchen.portfolio.ui.views.columns.NoteColumn;
+
+import org.eclipse.jface.action.Action;
+import org.eclipse.jface.action.ActionContributionItem;
+import org.eclipse.jface.action.IMenuListener;
+import org.eclipse.jface.action.IMenuManager;
+import org.eclipse.jface.action.MenuManager;
+import org.eclipse.jface.action.Separator;
+import org.eclipse.jface.layout.TableColumnLayout;
+import org.eclipse.jface.viewers.ColumnLabelProvider;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.IStructuredSelection;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
+import org.eclipse.jface.viewers.StructuredSelection;
+import org.eclipse.jface.viewers.TableViewer;
+import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.CTabFolder;
+import org.eclipse.swt.custom.CTabItem;
+import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.ToolBar;
 
 public class PortfolioListView extends AbstractListView implements ModificationListener
 {
@@ -240,8 +240,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
                 {
                     transactions.setInput(portfolio, portfolio.getTransactions());
                     transactions.refresh();
-                    CurrencyConverter converter = new CurrencyConverterImpl(factory,
-                                    portfolio.getReferenceAccount().getCurrencyCode());
+                    CurrencyConverter converter = new CurrencyConverterImpl(factory, portfolio.getReferenceAccount()
+                                    .getCurrencyCode());
                     statementOfAssets.setInput(PortfolioSnapshot.create(portfolio, converter, LocalDate.now()));
                 }
                 else
@@ -272,8 +272,8 @@ public class PortfolioListView extends AbstractListView implements ModificationL
 
         manager.add(new Separator());
 
-        manager.add(new Action(
-                        portfolio.isRetired() ? Messages.PortfolioMenuActivate : Messages.PortfolioMenuDeactivate)
+        manager.add(new Action(portfolio.isRetired() ? Messages.PortfolioMenuActivate
+                        : Messages.PortfolioMenuDeactivate)
         {
             @Override
             public void run()

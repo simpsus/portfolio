@@ -8,7 +8,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import name.abuchen.portfolio.model.Account;
-import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.SecurityPlan;
 import name.abuchen.portfolio.model.PortfolioTransaction;
 import name.abuchen.portfolio.model.Security;
 import name.abuchen.portfolio.money.CurrencyConverterImpl;
@@ -20,7 +20,7 @@ import name.abuchen.portfolio.ui.Messages;
 import name.abuchen.portfolio.ui.dialogs.transactions.AccountPlanDialog;
 import name.abuchen.portfolio.ui.dialogs.transactions.OpenDialogAction;
 import name.abuchen.portfolio.ui.dialogs.transactions.SecurityPlanDialog;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityPlanModel;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountPlanModel;
 import name.abuchen.portfolio.ui.util.AbstractDropDown;
 import name.abuchen.portfolio.ui.util.viewers.Column;
 import name.abuchen.portfolio.ui.util.viewers.ColumnEditingSupport;
@@ -75,8 +75,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
     @Override
     public void onModified(Object element, Object newValue, Object oldValue)
     {
-        InvestmentPlan plan = (InvestmentPlan) element;
-        if (plan.getAccount() != null && plan.getAccount().equals(SecurityPlanModel.DELIVERY))
+        SecurityPlan plan = (SecurityPlan) element;
+        if (plan.getAccount() != null && plan.getAccount().equals(AccountPlanModel.DELIVERY))
             plan.setAccount(null);
 
         markDirty();
@@ -159,7 +159,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         {
             public void selectionChanged(SelectionChangedEvent event)
             {
-                InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
+                SecurityPlan plan = (SecurityPlan) ((IStructuredSelection) event.getSelection()).getFirstElement();
 
                 if (plan != null)
                     transactions.setInput(plan.getPortfolio(), plan.getTransactions());
@@ -191,7 +191,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                return ((InvestmentPlan) e).getSecurity().getName();
+                return ((SecurityPlan) e).getSecurity().getName();
             }
 
             @Override
@@ -203,7 +203,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
         ColumnViewerSorter.create(Security.class, "name").attachTo(column); //$NON-NLS-1$
         List<Security> securities = new ArrayList<Security>(getClient().getSecurities());
         Collections.sort(securities, new Security.ByName());
-        new ListEditingSupport(InvestmentPlan.class, "security", securities).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(SecurityPlan.class, "security", securities).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnPortfolio, SWT.None, 120);
@@ -212,7 +212,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                return ((InvestmentPlan) e).getPortfolio().getName();
+                return ((SecurityPlan) e).getPortfolio().getName();
             }
 
             @Override
@@ -221,8 +221,8 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
                 return Images.PORTFOLIO.image();
             }
         });
-        ColumnViewerSorter.create(InvestmentPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
-        new ListEditingSupport(InvestmentPlan.class, "portfolio", getClient().getActivePortfolios()).addListener(this) //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPlan.class, "portfolio").attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(SecurityPlan.class, "portfolio", getClient().getActivePortfolios()).addListener(this) //$NON-NLS-1$
                         .attachTo(column);
         support.addColumn(column);
 
@@ -232,22 +232,22 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                InvestmentPlan plan = (InvestmentPlan) e;
+                SecurityPlan plan = (SecurityPlan) e;
                 return plan.getAccount() != null ? plan.getAccount().getName() : Messages.InvestmentPlanOptionDelivery;
             }
 
             @Override
             public Image getImage(Object e)
             {
-                InvestmentPlan plan = (InvestmentPlan) e;
+                SecurityPlan plan = (SecurityPlan) e;
                 return plan.getAccount() != null ? Images.ACCOUNT.image() : null;
             }
         });
         ColumnViewerSorter.create(Account.class, "name").attachTo(column); //$NON-NLS-1$
         List<Account> accounts = new ArrayList<Account>();
-        accounts.add(SecurityPlanModel.DELIVERY);
+        accounts.add(AccountPlanModel.DELIVERY);
         accounts.addAll(getClient().getAccounts());
-        new ListEditingSupport(InvestmentPlan.class, "account", accounts).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(SecurityPlan.class, "account", accounts).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnStartDate, SWT.None, 80);
@@ -256,11 +256,11 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                return Values.Date.format(((InvestmentPlan) e).getStart());
+                return Values.Date.format(((SecurityPlan) e).getStart());
             }
         });
-        ColumnViewerSorter.create(InvestmentPlan.class, "start").attachTo(column); //$NON-NLS-1$
-        new DateEditingSupport(InvestmentPlan.class, "start").addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPlan.class, "start").attachTo(column); //$NON-NLS-1$
+        new DateEditingSupport(SecurityPlan.class, "start").addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnInterval, SWT.None, 80);
@@ -269,14 +269,14 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, ((InvestmentPlan) e).getInterval());
+                return MessageFormat.format(Messages.InvestmentPlanIntervalLabel, ((SecurityPlan) e).getInterval());
             }
         });
-        ColumnViewerSorter.create(InvestmentPlan.class, "interval").attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPlan.class, "interval").attachTo(column); //$NON-NLS-1$
         List<Integer> available = new ArrayList<Integer>();
         for (int ii = 1; ii <= 12; ii++)
             available.add(ii);
-        new ListEditingSupport(InvestmentPlan.class, "interval", available).addListener(this).attachTo(column); //$NON-NLS-1$
+        new ListEditingSupport(SecurityPlan.class, "interval", available).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnAmount, SWT.RIGHT, 80);
@@ -285,12 +285,12 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                InvestmentPlan plan = (InvestmentPlan) e;
+                SecurityPlan plan = (SecurityPlan) e;
                 return Values.Money.format(Money.of(plan.getCurrencyCode(), plan.getAmount()));
             }
         });
-        ColumnViewerSorter.create(InvestmentPlan.class, "amount").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(InvestmentPlan.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPlan.class, "amount").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(SecurityPlan.class, "amount", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new Column(Messages.ColumnFees, SWT.RIGHT, 80);
@@ -299,12 +299,12 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
             @Override
             public String getText(Object e)
             {
-                InvestmentPlan plan = (InvestmentPlan) e;
+                SecurityPlan plan = (SecurityPlan) e;
                 return Values.Money.format(Money.of(plan.getCurrencyCode(), plan.getFees()));
             }
         });
-        ColumnViewerSorter.create(InvestmentPlan.class, "fees").attachTo(column); //$NON-NLS-1$
-        new ValueEditingSupport(InvestmentPlan.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
+        ColumnViewerSorter.create(SecurityPlan.class, "fees").attachTo(column); //$NON-NLS-1$
+        new ValueEditingSupport(SecurityPlan.class, "fees", Values.Amount).addListener(this).attachTo(column); //$NON-NLS-1$
         support.addColumn(column);
 
         column = new NoteColumn();
@@ -315,7 +315,7 @@ public class InvestmentPlanListView extends AbstractListView implements Modifica
 
     private void fillPlansContextMenu(IMenuManager manager)
     {
-        final InvestmentPlan plan = (InvestmentPlan) ((IStructuredSelection) plans.getSelection()).getFirstElement();
+        final SecurityPlan plan = (SecurityPlan) ((IStructuredSelection) plans.getSelection()).getFirstElement();
         if (plan == null)
             return;
 

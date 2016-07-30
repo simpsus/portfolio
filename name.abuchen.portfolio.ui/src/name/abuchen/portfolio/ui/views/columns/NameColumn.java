@@ -7,7 +7,7 @@ import org.eclipse.swt.graphics.Image;
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Adaptor;
 import name.abuchen.portfolio.model.Classification;
-import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.SecurityPlan;
 import name.abuchen.portfolio.model.Named;
 import name.abuchen.portfolio.model.Portfolio;
 import name.abuchen.portfolio.model.Security;
@@ -40,7 +40,7 @@ public class NameColumn extends Column
                 return Images.ACCOUNT.image();
             else if (n instanceof Portfolio)
                 return Images.PORTFOLIO.image();
-            else if (n instanceof InvestmentPlan)
+            else if (n instanceof SecurityPlan)
                 return Images.INVESTMENTPLAN.image();
             else if (n instanceof Classification)
                 return Images.CATEGORY.image();

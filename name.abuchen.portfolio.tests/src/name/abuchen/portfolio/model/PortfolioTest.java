@@ -31,7 +31,7 @@ public class PortfolioTest
         security.setName("Some security"); //$NON-NLS-1$
         client.addSecurity(security);
 
-        InvestmentPlan plan = new InvestmentPlan("Some plan"); //$NON-NLS-1$
+        SecurityPlan plan = new SecurityPlan("Some plan"); //$NON-NLS-1$
         client.addPlan(plan);
 
         buildTransaction(security);
@@ -48,7 +48,7 @@ public class PortfolioTest
         portfolio.addTransaction(transaction);
     }
 
-    private void buildTransactionWithPlan(Security security, InvestmentPlan plan)
+    private void buildTransactionWithPlan(Security security, SecurityPlan plan)
     {
         transactionWithPlan = new PortfolioTransaction();
         transactionWithPlan.setType(Type.DELIVERY_INBOUND);

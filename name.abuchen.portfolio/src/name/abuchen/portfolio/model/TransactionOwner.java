@@ -23,7 +23,7 @@ public interface TransactionOwner<T extends Transaction>
     /**
      * Deletes the transaction from the transaction owner ({@link Portfolio} or
      * {@link Account}). Deleting a transactions also removes a possible cross
-     * entry and removing the transaction from an {@link InvestmentPlan}.
+     * entry and removing the transaction from an {@link SecurityPlan}.
      */
     default void deleteTransaction(T transaction, Client client)
     {

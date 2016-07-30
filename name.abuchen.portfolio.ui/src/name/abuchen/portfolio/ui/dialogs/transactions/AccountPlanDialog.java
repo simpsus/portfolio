@@ -15,10 +15,10 @@ import javax.inject.Named;
 
 import name.abuchen.portfolio.model.Account;
 import name.abuchen.portfolio.model.Client;
-import name.abuchen.portfolio.model.InvestmentPlan;
+import name.abuchen.portfolio.model.SecurityPlan;
 import name.abuchen.portfolio.money.Values;
 import name.abuchen.portfolio.ui.Messages;
-import name.abuchen.portfolio.ui.dialogs.transactions.SecurityPlanModel.Properties;
+import name.abuchen.portfolio.ui.dialogs.transactions.AccountPlanModel.Properties;
 import name.abuchen.portfolio.ui.util.DateTimePicker;
 import name.abuchen.portfolio.ui.util.SimpleDateTimeSelectionProperty;
 
@@ -44,12 +44,12 @@ public class AccountPlanDialog extends AbstractTransactionDialog
     {
         super(parentShell);
         this.client = client;
-        setModel(new SecurityPlanModel(client));
+        setModel(new AccountPlanModel(client));
     }
 
-    private SecurityPlanModel model()
+    private AccountPlanModel model()
     {
-        return (SecurityPlanModel) this.model;
+        return (AccountPlanModel) this.model;
     }
 
     @Override
@@ -77,7 +77,7 @@ public class AccountPlanDialog extends AbstractTransactionDialog
 
         ComboInput account = new ComboInput(editArea, Messages.ColumnAccount);
         List<Account> accounts = including(client.getActiveAccounts(), model().getAccount());
-        accounts.add(0, SecurityPlanModel.DELIVERY);
+        accounts.add(0, AccountPlanModel.DELIVERY);
         account.value.setInput(accounts);
         account.bindValue(Properties.account.name(), Messages.MsgMissingAccount);
         account.bindCurrency(Properties.accountCurrencyCode.name());
@@ -156,7 +156,7 @@ public class AccountPlanDialog extends AbstractTransactionDialog
         model.addPropertyChangeListener(Properties.start.name(), e -> warnings.check());
     }
 
-    public void setPlan(InvestmentPlan plan)
+    public void setPlan(SecurityPlan plan)
     {
         model().setSource(plan);
     }

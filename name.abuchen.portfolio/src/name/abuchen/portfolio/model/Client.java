@@ -49,7 +49,7 @@ public class Client
 
     private List<Account> accounts = new ArrayList<>();
     private List<Portfolio> portfolios = new ArrayList<>();
-    private List<InvestmentPlan> plans;
+    private List<SecurityPlan> plans;
     private List<Taxonomy> taxonomies;
     private List<Dashboard> dashboards;
 
@@ -132,17 +132,17 @@ public class Client
         propertyChangeSupport.firePropertyChange("baseCurrency", this.baseCurrency, this.baseCurrency = baseCurrency); //$NON-NLS-1$
     }
 
-    public List<InvestmentPlan> getPlans()
+    public List<SecurityPlan> getPlans()
     {
         return Collections.unmodifiableList(plans);
     }
 
-    public void addPlan(InvestmentPlan plan)
+    public void addPlan(SecurityPlan plan)
     {
         plans.add(plan);
     }
 
-    public void removePlan(InvestmentPlan plan)
+    public void removePlan(SecurityPlan plan)
     {
         plans.remove(plan);
     }
@@ -440,7 +440,7 @@ public class Client
 
     private void deleteInvestmentPlans(Portfolio portfolio)
     {
-        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
+        for (SecurityPlan plan : new ArrayList<SecurityPlan>(plans))
         {
             if (portfolio.equals(plan.getPortfolio()))
                 removePlan(plan);
@@ -449,7 +449,7 @@ public class Client
 
     private void deleteInvestmentPlans(Account account)
     {
-        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
+        for (SecurityPlan plan : new ArrayList<SecurityPlan>(plans))
         {
             if (account.equals(plan.getAccount()))
                 removePlan(plan);
@@ -458,7 +458,7 @@ public class Client
 
     private void deleteInvestmentPlans(Security security)
     {
-        for (InvestmentPlan plan : new ArrayList<InvestmentPlan>(plans))
+        for (SecurityPlan plan : new ArrayList<SecurityPlan>(plans))
         {
             if (security.equals(plan.getSecurity()))
                 removePlan(plan);

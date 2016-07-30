@@ -9,54 +9,19 @@ import name.abuchen.portfolio.money.CurrencyConverter;
 import name.abuchen.portfolio.money.Money;
 import name.abuchen.portfolio.money.Values;
 
-public class InvestmentPlan implements Named, Adaptable
+public class SecurityPlan extends AbstractPlan
 {
-    private String name;
-    private String note;
     private Security security;
     private Portfolio portfolio;
-    private Account account;
 
-    private LocalDate start;
-    private int interval = 1;
-
-    private long amount;
-    private long fees;
-
-    private List<PortfolioTransaction> transactions = new ArrayList<PortfolioTransaction>();
-
-    public InvestmentPlan()
+    public SecurityPlan()
     {
         // needed for xstream de-serialization
     }
 
-    public InvestmentPlan(String name)
+    public SecurityPlan(String name)
     {
         this.name = name;
-    }
-
-    @Override
-    public String getName()
-    {
-        return name;
-    }
-
-    @Override
-    public void setName(String name)
-    {
-        this.name = name;
-    }
-
-    @Override
-    public String getNote()
-    {
-        return note;
-    }
-
-    @Override
-    public void setNote(String note)
-    {
-        this.note = note;
     }
 
     public Security getSecurity()
@@ -77,61 +42,6 @@ public class InvestmentPlan implements Named, Adaptable
     public void setPortfolio(Portfolio portfolio)
     {
         this.portfolio = portfolio;
-    }
-
-    public Account getAccount()
-    {
-        return account;
-    }
-
-    public void setAccount(Account account)
-    {
-        this.account = account;
-    }
-
-    public LocalDate getStart()
-    {
-        return start;
-    }
-
-    public void setStart(LocalDate start)
-    {
-        this.start = start;
-    }
-
-    public int getInterval()
-    {
-        return interval;
-    }
-
-    public void setInterval(int interval)
-    {
-        this.interval = interval;
-    }
-
-    public long getAmount()
-    {
-        return amount;
-    }
-
-    public void setAmount(long amount)
-    {
-        this.amount = amount;
-    }
-
-    public long getFees()
-    {
-        return fees;
-    }
-
-    public void setFees(long fees)
-    {
-        this.fees = fees;
-    }
-
-    public List<PortfolioTransaction> getTransactions()
-    {
-        return transactions;
     }
 
     public void removeTransaction(PortfolioTransaction transaction)
@@ -155,38 +65,6 @@ public class InvestmentPlan implements Named, Adaptable
             return type.cast(portfolio);
         else
             return null;
-    }
-
-    /**
-     * Returns the date of the last transaction generated
-     */
-    private LocalDate getLastDate()
-    {
-        LocalDate last = null;
-        for (PortfolioTransaction t : transactions)
-        {
-            LocalDate date = t.getDate();
-            if (last == null || last.isBefore(date))
-                last = date;
-        }
-
-        return last;
-    }
-
-    /**
-     * Returns the date for the next transaction to be generated based on the
-     * interval
-     */
-    private LocalDate next(LocalDate date)
-    {
-        LocalDate startLocalDate = start;
-
-        LocalDate next = date.plusMonths(interval);
-
-        // correct day of month (say the transactions are to be generated on the
-        // 31st, but the month has only 30 days)
-        next = next.withDayOfMonth(Math.min(next.lengthOfMonth(), startLocalDate.getDayOfMonth()));
-        return next;
     }
 
     public List<PortfolioTransaction> generateTransactions(CurrencyConverter converter)
@@ -235,8 +113,8 @@ public class InvestmentPlan implements Named, Adaptable
                             converter.with(targetCurrencyCode).getRate(tDate, security.getCurrencyCode()).getValue());
         }
 
-        long shares = Math
-                        .round(availableAmount * Values.Share.factor() * Values.Quote.factorToMoney() / (double) price);
+        long shares = Math.round(availableAmount * Values.Share.factor() * Values.Quote.factorToMoney()
+                        / (double) price);
 
         if (account != null)
         {
